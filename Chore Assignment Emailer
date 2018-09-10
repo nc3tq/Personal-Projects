@@ -1,0 +1,171 @@
+
+
+import random
+from collections import defaultdict
+import smtplib, sys
+number_of_chores = input("How many chores do you have: ")
+number_of_chores = int(number_of_chores)
+people= input("How many people do you want to assign a chore to? ")
+people = int(people)
+#i = 0
+people_list = {}
+mod = int(number_of_chores % people)
+if mod != 0:
+    print("Oh sucks! Someone is going to have to do more chores. Continue to find out who it is...")
+#
+chores_list = []
+n=0
+if number_of_chores == 1:
+    chore = input("Please enter the only chore: ")
+    chores_list.append(chore)
+else:
+    while n< number_of_chores:
+        if n==0:
+            chore=input("Please enter the first chore: ")
+            chores_list.append(chore)
+            n = n + 1
+        if n>0 and n<number_of_chores-1:
+            chore=input("Please enter the next chore: ")
+            chores_list.append(chore)
+            n = n+1
+        else:
+            chore= input("Please enter the last chore: ")
+            chores_list.append(chore)
+            n = number_of_chores+1
+            #print(chores_list)
+
+print("----------------------------------------------------------------------------------------------------------------")
+m =0
+if people ==1:
+    email = input("Please enter the only email: ")
+    people_list[email] = ''
+else:
+    while m < people:
+# for m in range(0, people-1):
+    #print(i)
+        if m==0:
+            email=input("Please enter the first email: ")
+            people_list[email]=''
+        # randomChore = random.choice(chores_list)
+        # people_list[email]= randomChore
+        # chores_list.remove(randomChore)
+            m = m+1
+        if m>0 and m <people-1:
+            email= input("Please enter the next email: ")
+            people_list[email]=''
+        # randomChore = random.choice(chores_list)
+        # people_list[email] = randomChore
+        # chores_list.remove(randomChore)
+            m = m+1
+        else:
+            email = input("Please enter the last email: ")
+            people_list[email]=''
+            m= people+1
+        # randomChore = random.choice(chores_list)
+        # people_list[email] = randomChore
+        # chores_list.remove(randomChore)
+# print(people_list)
+# randomPerson = random.choice(list(people_list))
+# print("That is: " + randomPerson + ". That's alright! Maybe it will be rewarding?!")
+# for i in people_list:
+# random_list = []
+# random_list.append(list(people_list.keys()))
+
+random_list = []
+for i in people_list.keys():
+    random_list.append(i)
+
+
+
+#print(random_list)
+lists = {}
+
+# for i in people_list:
+#     randomChore = []
+#     type=random.choice(chores_list)
+#     randomChore.append(type)
+#     people_list[i]=randomChore
+#     chores_list.remove(type)
+#     #print(people_list)
+# for x in range(0,mod):
+#     randomCho = []
+#     new_chores_list = chores_list
+#     randomPerson=random.choice(random_list)
+#     type1 = random.choice(new_chores_list)
+#     #print(type1)
+#     randomCho.append(type1)
+#     lists[randomPerson]=randomCho
+#     #print(people_list.get(randomPerson))
+#     #people_list[randomPerson]=people_list.get(randomPerson)
+#     new_chores_list.remove(type1)
+#     random_list.remove(randomPerson)
+
+for i in people_list:
+    randomChore = ""
+    type=random.choice(chores_list)
+    #randomChore.append(type)
+    people_list[i]=type
+    chores_list.remove(type)
+    #print(people_list)
+for x in range(0,mod):
+    randomCho = ""
+    new_chores_list = chores_list
+    randomPerson=random.choice(random_list)
+    type1 = random.choice(new_chores_list)
+    #print(type1)
+    #randomCho.append(type1)
+    lists[randomPerson]=type1
+    #print(people_list.get(randomPerson))
+    #people_list[randomPerson]=people_list.get(randomPerson)
+    new_chores_list.remove(type1)
+    random_list.remove(randomPerson)
+
+
+d3 = defaultdict(list)
+for d in (people_list, lists):
+    for key, value in d.items():
+        d3[key].append(value)
+
+# print(dict(d3))
+
+
+
+
+
+#
+emails = list(d3.keys())
+# print(emails)
+vals=(list(d3.values()))
+
+
+
+
+
+
+
+#
+smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+smtpObj.ehlo()
+smtpObj.starttls()
+smtpObj.login('peelsonwheels18@gmail.com','teamandy')
+# smtpObj.sendmail('peelsonwheels18@gmail.com', 'receiver', 'content')
+i = 0
+while i in range(0, len(emails)):
+    content = "Subject: Your chores to complete. \nHello %s! \nYou have to complete these chores: %s"%(emails[i], ", ".join(vals[i]))
+    sendmailStatus=smtpObj.sendmail('peelsonwheels18@gmail.com', emails[i], content)
+    print('Sending email to %s...' % emails[i])
+    if sendmailStatus != {}:
+        print('There was a problem sending email to %s: %s' % (emails[i],sendmailStatus))
+    i= i+1
+# body = "Subject: %s chores to complete.\nDear %s,\n Thank you!'" %
+
+smtpObj.quit()
+
+
+
+
+
+
+
+
+
