@@ -1,0 +1,313 @@
+//nc3tq
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+public class Courses extends JFrame{
+	private JPanel panel;  // A holding panel
+	private JLabel hours, courses, grade, target, gPA1, total;// A message to the user
+	private JFrame frame;
+	private JButton addClass, calculate, remove, targetb;
+	private final int WINDOW_WIDTH = 900;  // Window width
+	private final int WINDOW_HEIGHT = 500;
+	private JTextField hourTextField, coursesTextField, gradeTextField, targetGPA;
+	private JComboBox numHours1, grades1;
+	private DefaultTableModel model; 
+	private JTable table;
+	private double value, GPA;
+	private ArrayList<Integer> credits;
+	private double gpa; 
+	
+	
+	public static void main(String[] args) {
+		new Courses();
+	}
+
+	public Courses() {
+		frame = new JFrame();
+		frame.setLayout(new FlowLayout());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("GPA Calculator");
+		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+
+		buildPanel();
+
+		add(panel, BorderLayout.CENTER);
+//		add(gPA1, BorderLayout.EAST); 
+//		add(targetGPA, BorderLayout.EAST); 
+
+
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+
+
+	private void buildPanel() {
+
+		panel = new JPanel();
+		panel.setLayout(new FlowLayout());
+
+		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		int width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+		gPA1 = new JLabel("<html>GPA: " + gpa + "</html>");
+//		rgPA1 = new JLabel("<html>Required GPA: ");
+		////total = new JLabel("<html>Required GPA: " + "" + "</html>");
+
+		courses = new JLabel("Course Name:");
+		coursesTextField = new JTextField(10);
+		hours = new JLabel("Hours:");
+		hourTextField = new JTextField(10);
+		grade = new JLabel("Grade Received/Anticipated:");
+		gradeTextField = new JTextField(10);
+		addClass = new JButton("Add Class");
+		//target = new JLabel("Target GPA:");
+		//targetGPA = new JTextField(5);
+		JButton calculate = new JButton("Calculate");
+		//		calculate.addActionListener(new AddClassPressed());
+		JButton remove = new JButton("Remove");
+		JButton refresh = new JButton("Refresh");
+		//JButton targetb = new JButton("Calulate Your Target GPA");
+
+
+
+
+
+		String[] numHours = {"---","1", "2", "3", "4"};
+		String [] gradeR = {"---","A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F"}; 
+		JComboBox<String> grades1 = new JComboBox<String>(gradeR);
+		JComboBox<String> numHours1 = new JComboBox<String>(numHours);
+
+
+		//		table.setLocation(500,500);
+
+
+//		panel.add(gPA1);
+		panel.add(courses);
+		panel.add(coursesTextField);
+		panel.add(hours);
+		//		panel.add(hourTextField);
+		panel.add(numHours1);
+		panel.add(grade);
+		panel.add(grades1);
+		//		panel.add(gradeTextField);
+		panel.add(addClass);
+		panel.add(calculate);
+		panel.add(gPA1);
+		////panel.add(total);
+		panel.add(remove);
+		panel.add(refresh);
+		
+		//panel.add(target);
+		//panel.add(targetGPA);
+		//panel.add(targetb);
+
+
+		model = new DefaultTableModel();
+		table = new JTable(model);
+		model.addColumn("Course Name");
+		model.addColumn("Hours");
+		model.addColumn("Grade");
+		panel.add(table);
+
+
+
+		addClass.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String courseName = coursesTextField.getText();
+				String hoursGet = (String) numHours1.getSelectedItem();
+				String gradeGet = (String) grades1.getSelectedItem();
+				String [] data = {courseName, hoursGet, gradeGet};
+				System.out.print(hoursGet);
+				model.addRow(data);
+			}
+		});
+		/**Once the user clicks the add class button, a table will appear and the operator will add the class typed 
+		 * into the grid. It makes a table with the three headers.The 15 credit classes are assumed to be coupled. For example, 
+		 * it can be five three credit classes. The class is also the grade for the entire class. It is not the individual 
+		 * assignments. **/
+
+
+		remove.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int[] selectRows = table.getSelectedRows();
+				for (int i = 0; i < selectRows.length; i++) {
+					model.removeRow(selectRows[i]);
+				}
+			}			
+
+		});
+		/** Before the user clicks the button, they have to select the course they want to remove. If they don't then the operator 
+		 * will not know what to remove. So we assume that the user first clicks the row in the table and then selects remove. 
+		 * Once it is clicked, the row is removed. **/
+
+
+		refresh.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				while(model.getRowCount() > 0)
+				{
+					model.removeRow(0);
+				}
+			}
+		});
+		/** When the user clicks the button, the whole chart will be removed. This does not refresh the values. It is assumed that 
+		 * the user will know that he or she has to input the values on their own and then add the class.  **/
+		calculate.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int rowCount = model.getRowCount();
+				double value = 0;
+				double gpa = 0;
+				int credits = 0; 
+				for (int i = rowCount - 1; i>= 0; i--) {
+					String grade12 = (String) model.getValueAt(i, 2); 
+					String credhours = (String) model.getValueAt(i, 1);
+					if (!grade12.equals("---") && !credhours.equals("---")) {
+						int parts = Integer.parseInt(credhours);
+						if(grade12.equals("A+")) {
+							value += parts*4.00;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("A")) {
+							value += parts*4.00;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("A-")) {
+							value += parts*3.67;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("B+")) {
+							value += parts*3.33;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("B")) {
+							value += parts*3.00;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("B-")) {
+							value += parts*2.67;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("C+")) {
+							value += parts*2.33;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("C")) {
+							value += parts*2.00;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("C-")) {
+							value += parts*1.67;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("D+")) {
+							value += parts*1.33;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("D")) {
+							value += parts*1.00;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("D-")) {
+							value += parts*0.67;
+							credits += Integer.parseInt(credhours);
+						}
+						else if(grade12.equals("F")) {
+							value += parts*0.00;
+							credits += Integer.parseInt(credhours);
+						}
+						gpa = value/credits;
+						GPA= value; 
+						double roundOff = Math.round(gpa*100.0)/ 100.0;
+						gPA1.setText("<html>GPA: " + roundOff + "</html>");
+					}
+					else if (grade12.equals("---")) {
+						String gpa1 = (String) "--";
+						gPA1.setText("<html>GPA: " + gpa1 + "</html>");
+					}
+				}
+
+			}
+				});
+		/** This button calculates the GPA. It puts the values from a chart and then changes the value and amount of credits. It is assumed
+		 * that the user knows that the scale is 4.0 and that they can use the scroll bar to input a grade.  **/
+		
+//		targetb.addActionListener(new ActionListener(){
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				int rowCount = model.getRowCount();
+//				double desired = 0.0;
+//				double required = 0;
+//				double future = 0;
+//				int credit = 0;
+////				double total1 = 0;
+//				desired = Double.parseDouble(targetGPA.getText());
+//				for(int i = (rowCount - 1); i >= 0; i--) {
+//					String grade12 = (String) model.getValueAt(i, 2); 
+//					String credhours = (String) model.getValueAt(i, 1);
+//					String courseName = (String) model.getValueAt(i, 0);
+//					
+//					credit += Integer.parseInt(credhours);
+//
+//					
+//					if(grade12.equals("---") && courseName.equals("---")) {
+//						future += Integer.parseInt(credhours); 
+//					}
+//					
+//					
+//				}
+//				System.out.println(credhours)
+//				System.out.println(credit);
+				////required = desired * credit;
+//				System.out.println(total1);
+				//System.out.println(desired);
+				////required = required - GPA;
+				
+				//System.out.println(total1);
+				////required = required / future;
+//				System.out.println(credit);
+//				System.out.println(total1);
+				//System.out.println(total1);
+////				total.setText("<html>Required GPA: " + required + "</html>");
+//				
+//				if(required > 4.0) {
+//					total.setText("Add more credits and recalculate");
+//				}
+//				if(required < 2.0) {
+//					total.setText("Try to take less credits!");
+//				}
+				
+		
+//			}
+			
+				
+//		});
+	}
+}
+
+		
+
+	
+
+
+
+
+
