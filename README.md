@@ -1,2 +1,2 @@
-# Chore Assignment Emailer and GPA Calculator
-Projects I have created and am currently working on.
+# Personal Projects
+Projects I have created and am currently working on. There are different branches for different projects. 
